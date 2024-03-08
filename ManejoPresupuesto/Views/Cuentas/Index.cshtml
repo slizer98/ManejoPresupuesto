@@ -31,11 +31,15 @@
             $@FormatearBalance(Model.Where(x => x.Balance < 0).Sum(x => x.Balance))
         </div>
     </div>
-    <div>
+    <div> 
+        @{
+            string claseTotal;
+            claseTotal = Model.Sum(x => x.Balance) < 0 ? "text-danger" : "text-success";
+        }
         <div>
             <strong>Total</strong>
         </div>
-        <div>
+        <div class="@claseTotal">
             $@FormatearBalance(Model.Sum(x => x.Balance))
         </div>
     </div>
@@ -52,8 +56,12 @@
                     var claseTipoCuenta = ObtenerClaseBalance(tipoCuenta.Balance);
                 }
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="@dataBSTarget">
-                    <span class="me-3"><strong>@tipoCuenta.TipoCuenta</strong></span>
-                    <span class="@claseTipoCuenta">@FormatearBalance(tipoCuenta.Balance)</span>
+                    <span class="me-3">
+                        <span>
+                        <strong>@tipoCuenta.TipoCuenta</strong>
+                        </span>
+                        <span class="@claseTipoCuenta">@FormatearBalance(tipoCuenta.Balance)</span>
+                    </span>
                 </button>
             </h2>
             <div id="@id" class="accordion-collapse collapse show">
@@ -63,7 +71,15 @@
                         {
                             var claseCuenta = ObtenerClaseBalance(cuenta.Balance);
                             <li class="list-group-item">
-                                <span><strong>@cuenta.Nombre</strong></span>
+                                <span>
+                                    <strong>@cuenta.Nombre</strong>
+                                    <a asp-action="Editar" asp-route-id="@cuenta.Id" class="btn btn-primary">
+                                        <i class="bi-pencil-fill"></i>
+                                    </a>
+                                    <a class="btn btn-danger">
+                                        <i class="bi-trash-fill"></i>
+                                    </a>
+                                </span>
                                 <span class="@claseCuenta">@FormatearBalance(cuenta.Balance)</span>
                             </li>
                         }

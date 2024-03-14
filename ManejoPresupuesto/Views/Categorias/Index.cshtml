@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Categoria>
+@{
+    ViewData["Title"] = "Categorías";
+}
+
+<h1>Categorías</h1>
+<h5>
+    La categoría nos permite indicar en qué gastamos nuestro dinero,
+    también, de dónde provienen nuestros ingresos
+</h5>
+
+<a asp-action="Crear" class="btn btn-primary mb-3">Crear nuevo</a>
+@if (Model.Count() == 0)
+{
+    <p class="text-center fw-bold fs-4">No tienes creada ninguna categoria</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Acciones</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var categoria in Model)
+            {
+                <tr>
+                    <td>
+                        @categoria.Nombre
+                    </td>
+                    <td>
+                        @categoria.TipoOperacionId.ToString()
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" asp-action="Editar" asp-route-id="@categoria.Id">Editar</a>
+                        <a class="btn btn-danger" asp-action="Borrar" asp-route-id="@categoria.Id">Borrar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+}

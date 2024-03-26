@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "Reporte Diario";
 }
-
-
+ 
+<partial name="_Submenu" Model="SubmenuTransacciones.Diario" />
+<div class="mb-3 w-100 d-flex justify-content-end">
+    <a asp-action="Crear" class="btn btn-success py-2"> Crear nueva transacción</a>
+</div>
 <partial name="_ReporteTransaccionesDetalladas" model="Model" />

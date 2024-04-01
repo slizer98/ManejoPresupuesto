@@ -103,9 +103,53 @@ namespace ManejoPresupuesto.Controllers
 
             return View(modelo);
         }
-        public IActionResult Mensual()
+        public async Task<IActionResult> Mensual(int year)
         {
-            return View();
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            if(year == 0 )
+            {
+                year = DateTime.Today.Year;
+            }
+
+            var transaccionesPorMes = await repositorioTransacciones.ObtenerPorMes(usuarioId, year);
+
+            var transaccionesAgrupadas = transaccionesPorMes.GroupBy(x => x.Mes)
+                                                            .Select(x => new ResultadoObtenerPorMes()
+                                                            {
+                                                                Mes = x.Key,
+                                                                Ingreso = x.Where(x => x.TipoOperacionId == TipoOperacion.Ingreso)
+                                                                           .Select(x => x.Monto)
+                                                                           .FirstOrDefault(),
+                                                                Gasto = x.Where(x => x.TipoOperacionId == TipoOperacion.Gasto)
+                                                                           .Select(x => x.Monto)
+                                                                           .FirstOrDefault()
+                                                            }).ToList();
+
+            for (int mes = 1; mes < 12; mes++)
+            {
+                var transaccion = transaccionesAgrupadas.FirstOrDefault(x => x.Mes == mes);
+                var fechaReferencia = new DateTime(year, mes, 1);
+                if(transaccion is null)
+                {
+                    transaccionesAgrupadas.Add(new ResultadoObtenerPorMes()
+                    {
+                        Mes = mes,
+                        FechaReferencia = fechaReferencia,
+                    });
+                } 
+                else
+                {
+                    transaccion.FechaReferencia = fechaReferencia;
+                }
+            }
+
+            transaccionesAgrupadas = transaccionesAgrupadas.OrderByDescending(x => x.Mes).ToList();
+
+            var modelo = new ReporteMensualViewModel();
+            modelo.Year = year;
+            modelo.TransaccionesPorMes = transaccionesAgrupadas;
+
+            return View(modelo);
         }
         public IActionResult ExcelReporte()
         {
